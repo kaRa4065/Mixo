@@ -78,7 +78,7 @@ export default function CampaignDetail({
         campaignData = campaignRes.campaign;
       } catch (err) {
         handleApiError(err);
-        
+
         campaignData = {
           id,
           name: "-",
@@ -105,7 +105,7 @@ export default function CampaignDetail({
           ctr: 0,
           cpc: 0,
           conversion_rate: 0,
-          campaign_id: "-",
+          campaign_id: "",
         };
       }
 
@@ -130,7 +130,7 @@ export default function CampaignDetail({
             </button>
             <div>
               <h1 className="text-xl font-medium tracking-wider text-primary !mb-0 flex items-center  ">
-                {data?.name??"Campaign Details"}{" "}
+                {data?.name ?? "Campaign Details"}{" "}
                 <span
                   className={`px-3 py-1 rounded-full !text-xs font-medium ml-2
               ${
@@ -142,15 +142,17 @@ export default function CampaignDetail({
                   {data?.status.toUpperCase()}
                 </span>
               </h1>
-              <p className="text-lighter text-xs mt-1">
-                Campaign ID: {data?.id} |{" "}
-                <span className="text-xs text-lighter mr-2">
-                  (Created on:{" "}
-                  {data?.created_at &&
-                    new Date(data?.created_at).toLocaleDateString()}
-                  )
-                </span>
-              </p>
+              {data?.id && (
+                <p className="text-lighter text-xs mt-1">
+                  Campaign ID: {data?.id} |{" "}
+                  <span className="text-xs text-lighter mr-2">
+                    (Created on:{" "}
+                    {data?.created_at &&
+                      new Date(data?.created_at).toLocaleDateString()}
+                    )
+                  </span>
+                </p>
+              )}
             </div>
           </div>
         }
