@@ -16,7 +16,6 @@ export default function CampaignCard() {
   const pageSize = 4;
 
   useEffect(() => {
-    // Fetch campaigns only once when component mounts
     const loadCampaigns = async () => {
       setLoading(true);
       try {

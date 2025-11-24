@@ -3,9 +3,6 @@ import React, { useEffect, useState } from "react";
 import CampaignCard from "./CampaignCard";
 import InsightsCharts from "./InsightsCharts";
 import InsightsCards from "./InsightPanel";
-
-import { LeftOutlined, RightOutlined, SearchOutlined } from "@ant-design/icons";
-import { Card, Skeleton } from "antd";
 import { CampaignInsights } from "../types/insights";
 import CampaignInsightService from "../services/CampaignInsightService";
 import { handleApiError } from "./lib/handleApiError";
@@ -16,7 +13,6 @@ export default function DashboardPage(initialData: any) {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Fetch campaigns only once when component mounts
     const loadCampaigns = async () => {
       setLoading(true);
       try {

@@ -1,18 +1,15 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import useSWR from "swr";
 import RealTimeStream from "../../components/RealTimeStream";
 import CampaignService from "../../services/campaignService";
-import {
-  Campaign,
-  CampaignDetails,
-  CampaignInsights,
-} from "../../types/campaign";
+import { CampaignDetails, CampaignInsights } from "../../types/campaign";
 import { handleApiError } from "../../components/lib/handleApiError";
 import PageHeader from "../../components/pageHeader";
 import { LeftOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-export const metricsConfig: {
+import { SkeletonCard } from "../../components/helper";
+
+const metricsConfig: {
   key: keyof CampaignInsights;
   label: string;
   format: "datetime" | "number" | "currency" | "percent";
@@ -26,7 +23,7 @@ export const metricsConfig: {
   { key: "cpc", label: "CPC", format: "currency" },
   { key: "conversion_rate", label: "Conversion Rate", format: "percent" },
 ];
-export const formatMetricValue = (value: any, format: string) => {
+const formatMetricValue = (value: any, format: string) => {
   if (value === null || value === undefined) return "-";
 
   switch (format) {
@@ -52,9 +49,7 @@ export const formatMetricValue = (value: any, format: string) => {
       return value;
   }
 };
-export const SkeletonCard = ({ className = "h-20 w-full" }) => (
-  <div className={`animate-pulse bg-gray-200 rounded-lg ${className}`}></div>
-);
+
 export default function CampaignDetail({
   params,
 }: {

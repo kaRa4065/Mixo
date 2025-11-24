@@ -1,9 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { handleApiError } from "./lib/handleApiError";
 import { CampaignInsightsEvent } from "../types/campaign";
-import API_CONFIG from "./lib/config/config";
-import { SkeletonCard } from "../campaign/[id]/page";
+import { SkeletonCard } from "./helper";
 
 interface MetricConfig {
   key:
