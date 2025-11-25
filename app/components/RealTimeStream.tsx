@@ -66,8 +66,8 @@ const MetricCard = memo(
     return (
       <div
         className={`flex items-center gap-4 bg-white p-4 border rounded-xl shadow-sm hover:shadow-md transition
-          ${flash === "increase" ? "bg-green-50 animate-pulse" : ""}
-          ${flash === "decrease" ? "bg-red-50 animate-pulse" : ""}
+          ${flash === "increase" ? "!bg-green-50 !animate-pulse" : ""}
+          ${flash === "decrease" ? "!bg-red-50 !animate-pulse" : ""}
         `}
       >
         <div>
