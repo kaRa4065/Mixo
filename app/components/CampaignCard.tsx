@@ -44,13 +44,13 @@ export default function CampaignCard() {
   }, []);
 
   const totalPages = useMemo(
-    () => Math.ceil(state.campaigns.length / pageSize),
-    [state.campaigns.length]
+    () => Math.ceil(state?.campaigns?.length / pageSize),
+    [state?.campaigns?.length]
   );
 
   const displayedCampaigns = useMemo(
-    () => state.campaigns.slice((page - 1) * pageSize, page * pageSize),
-    [state.campaigns, page]
+    () => state?.campaigns?.slice((page - 1) * pageSize, page * pageSize),
+    [state?.campaigns, page]
   );
 
   return (

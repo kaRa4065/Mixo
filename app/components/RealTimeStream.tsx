@@ -95,9 +95,11 @@ export default function RealTimeStream({ campaignId }: { campaignId: string }) {
       eventSource.onmessage = (event) => {
         try {
           const parsedData: Record<string, number> = JSON.parse(event.data);
-          prevLogRef.current = log;
-          setLog(parsedData);
-          setLoading(false);
+          // prevLogRef.current = log;
+setLog((prev) => {
+      prevLogRef.current = prev;   // correct previous values
+      return parsedData;
+    });          setLoading(false);
         } catch (err) {
           console.error("Error parsing SSE data:", err);
         }
@@ -115,7 +117,7 @@ export default function RealTimeStream({ campaignId }: { campaignId: string }) {
     return () => {
       eventSource?.close();
     };
-  }, [campaignId, log]);
+  }, [campaignId]);
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border">
