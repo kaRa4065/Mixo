@@ -1,6 +1,6 @@
 interface PageHeaderProps {
-  title: React.ReactNode; // Accepts string or JSX
-  children?: React.ReactNode; // Right side actions
+  title: React.ReactNode; 
+  children?: React.ReactNode; 
 }
 
 export default function PageHeader({ title, children }: PageHeaderProps) {
@@ -12,7 +12,7 @@ export default function PageHeader({ title, children }: PageHeaderProps) {
             {title}
           </h2>
         ) : (
-          title // Render JSX directly
+          title 
         )}
       </div>
 

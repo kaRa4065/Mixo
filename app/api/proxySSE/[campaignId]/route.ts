@@ -1,4 +1,3 @@
-// app/api/proxySSE/[campaignId]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import API_CONFIG from "../../../components/lib/config/config";
 
@@ -6,7 +5,6 @@ export async function GET(req: NextRequest) {
   // Access campaignId via URL pathname
   const url = new URL(req.url);
   const parts = url.pathname.split("/");
-  // URL: /api/proxySSE/[campaignId] → parts = ["", "api", "proxySSE", "camp_001"]
   const campaignId = parts[3];
 
   if (!campaignId) {

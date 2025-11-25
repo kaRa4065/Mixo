@@ -1,6 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { CampaignInsightsEvent } from "../types/campaign";
+import React, { useEffect, useState, useRef, memo } from "react";
 import { SkeletonCard } from "./helper";
 
 interface MetricConfig {
@@ -30,7 +29,7 @@ const formatMetricValue = (
   value: number | undefined,
   format: MetricConfig["format"]
 ) => {
-  if (value === undefined || value === null) return "-";
+  if (value == null) return "-";
   switch (format) {
     case "number":
       return value.toLocaleString();
@@ -43,9 +42,50 @@ const formatMetricValue = (
   }
 };
 
+// Individual metric card with change highlight
+const MetricCard = memo(
+  ({
+    label,
+    value,
+    prevValue,
+  }: {
+    label: string;
+    value: number;
+    prevValue: number | undefined;
+  }) => {
+    const [flash, setFlash] = useState<"increase" | "decrease" | null>(null);
+
+    useEffect(() => {
+      if (prevValue !== undefined && value !== prevValue) {
+        setFlash(value > prevValue ? "increase" : "decrease");
+        const timeout = setTimeout(() => setFlash(null), 500);
+        return () => clearTimeout(timeout);
+      }
+    }, [value, prevValue]);
+
+    return (
+      <div
+        className={`flex items-center gap-4 bg-white p-4 border rounded-xl shadow-sm hover:shadow-md transition
+          ${flash === "increase" ? "bg-green-50 animate-pulse" : ""}
+          ${flash === "decrease" ? "bg-red-50 animate-pulse" : ""}
+        `}
+      >
+        <div>
+          <p className="!text-xs text-lighter tracking-wide uppercase">
+            {label}
+          </p>
+          <p className="!text-md font-semibold text-secondary mt-1">{value}</p>
+        </div>
+      </div>
+    );
+  }
+);
+
 export default function RealTimeStream({ campaignId }: { campaignId: string }) {
-  const [log, setLog] = useState<CampaignInsightsEvent | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [log, setLog] = useState<Record<string, number>>({});
+  const prevLogRef = useRef<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     let eventSource: EventSource | null = null;
 
@@ -54,7 +94,8 @@ export default function RealTimeStream({ campaignId }: { campaignId: string }) {
 
       eventSource.onmessage = (event) => {
         try {
-          const parsedData: CampaignInsightsEvent = JSON.parse(event.data);
+          const parsedData: Record<string, number> = JSON.parse(event.data);
+          prevLogRef.current = log;
           setLog(parsedData);
           setLoading(false);
         } catch (err) {
@@ -63,14 +104,9 @@ export default function RealTimeStream({ campaignId }: { campaignId: string }) {
       };
 
       eventSource.onerror = (err) => {
-        console.error("SSE connection error:", err);
+        console.error("SSE error:", err);
         eventSource?.close();
-
-        // Retry after 3 seconds
-        setTimeout(() => {
-          console.log("Reconnecting SSE...");
-          connect();
-        }, 3000);
+        setTimeout(connect, 3000); // Retry connection
       };
     };
 
@@ -79,13 +115,13 @@ export default function RealTimeStream({ campaignId }: { campaignId: string }) {
     return () => {
       eventSource?.close();
     };
-  }, [campaignId]);
+  }, [campaignId, log]);
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border">
       <h3 className="font-medium mb-2 text-lighterPrimary">Event Stream</h3>
       <div className="text-xs text-gray-500 mb-2">
-        Real-time events (most recent first)
+        Real-time metrics (most recent first)
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {loading
@@ -93,22 +129,12 @@ export default function RealTimeStream({ campaignId }: { campaignId: string }) {
               <SkeletonCard key={idx} className="h-20 w-full" />
             ))
           : metricsConfig.map((metric) => (
-              <div
+              <MetricCard
                 key={metric.key}
-                className="flex items-center gap-4 bg-white p-4 border rounded-xl shadow-sm hover:shadow-md transition"
-              >
-                <div>
-                  <p className="!text-xs text-lighter tracking-wide uppercase">
-                    {metric.label}
-                  </p>
-                  <p className="!text-md font-semibold text-secondary mt-1">
-                    {log
-                      ? formatMetricValue(log[metric.key], metric.format)
-                      : formatMetricValue(0, metric.format)}{" "}
-                    {/* default 0 */}{" "}
-                  </p>
-                </div>
-              </div>
+                label={metric.label}
+                value={formatMetricValue(log[metric.key], metric.format) as any}
+                prevValue={prevLogRef.current[metric.key]}
+              />
             ))}
       </div>
     </div>
